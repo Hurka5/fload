@@ -1,5 +1,14 @@
 package webscraper
 
+import (
+  "net/http"
+  "fmt"
+  "image"
+  _"image/jpeg"
+  _"image/png"
+  _"image/gif"
+)
+
 var SOURCES = map[string]ItemFetcher{
   "https://battwo.com": &BattwoFetcher{source: "https://battwo.com"},
 }
@@ -12,7 +21,7 @@ var DEFAULT_SOURCES = [...]string {
 
 type DiscoverItem struct {
   Src string
-  Img string
+  Img image.Image
   Name string
 }
 
@@ -54,4 +63,22 @@ func (w* Webscraper) FetchDiscoverItems()  []DiscoverItem {
     items = append(items, fitems...)
   }
   return items
+}
+
+
+func getImageFromUrl(url string) image.Image {
+
+  resp, err := http.Get(url)
+  if err != nil {
+    fmt.Errorf("error making http request: %w", err)
+  }
+  defer resp.Body.Close()
+
+  img, format, err := image.Decode(resp.Body)
+  if err != nil {
+    fmt.Errorf("cannot decode image: %w", err)
+  }
+  fmt.Println("Image format:", format)
+
+  return img
 }
