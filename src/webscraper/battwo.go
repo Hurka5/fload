@@ -6,11 +6,28 @@ import (
   "fmt"
   "os"
   "log"
-  "io/ioutil"
+  _"io/ioutil"
+  "golang.org/x/net/html"
 )
 
 type BattwoFetcher struct {
   source string
+}
+
+func findElementByID(n *html.Node, id string) *html.Node {
+	if n.Type == html.ElementNode {
+		for _, attr := range n.Attr {
+			if attr.Key == "id" && attr.Val == id {
+				return n
+			}
+		}
+	}
+	for child := n.FirstChild; child != nil; child = child.NextSibling {
+		if result := findElementByID(child, id); result != nil {
+			return result
+		}
+	}
+	return nil
 }
 
 func (f *BattwoFetcher) FetchDiscoverItems() []DiscoverItem {
@@ -28,13 +45,23 @@ func (f *BattwoFetcher) FetchDiscoverItems() []DiscoverItem {
 		log.Fatalf("Request failed with status code: %d", resp.StatusCode)
 	}
 
-  // Read response body
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalf("Error reading response body: %v", err)
-	}
+  doc, err := html.Parse(resp.Body)
+  if err != nil {
+		log.Fatalf("Error: %d", err)
+    return nil
+  }
 
-  println(string(body))
+  println("find element by id")
+  slist := findElementByID(doc, "series-list")
+
+  println(slist.Data)
+  for child := slist.FirstChild; child != nil; child = child.NextSibling {
+    println(child.Data)
+    for _,v := range child.Attr {
+      println(v.Key," = ",v.Val)
+    }
+    println(child.Attr)
+	}
 
   return items
 }
