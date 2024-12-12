@@ -23,12 +23,16 @@ func main() {
 
 	app := app.New()
 	w := app.NewWindow("Fload")
+  
+  discover := container.NewTabItemWithIcon("Discover", theme.SearchReplaceIcon(), discoverPage())
 
 	tabs := container.NewAppTabs(
-	  container.NewTabItemWithIcon("Discover", theme.SearchReplaceIcon(), discoverPage()),
 	  container.NewTabItemWithIcon("Favorites", theme.ListIcon(), widget.NewLabel("Favorites")),
+    discover,
 	  container.NewTabItemWithIcon("Settings", theme.SettingsIcon(), widget.NewLabel("Settings")),
 	)
+
+  println(discover.Content.Visible())
 
 	tabs.SetTabLocation(container.TabLocationBottom)
   w.Resize(fyne.NewSize(450,800))

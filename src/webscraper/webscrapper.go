@@ -20,9 +20,14 @@ var DEFAULT_SOURCES = [...]string {
 }
 
 type DiscoverItem struct {
+  Fetcher ItemFetcher
   Src string
   Img image.Image
   Name string
+}
+
+func (di *DiscoverItem) FetchImg(src string) {
+  di.Img = getImageFromUrl(src)
 }
 
 type ChapterItem struct {

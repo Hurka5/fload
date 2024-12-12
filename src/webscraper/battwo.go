@@ -43,8 +43,9 @@ func (f *BattwoFetcher) FetchDiscoverItems() []DiscoverItem {
 		img_src, _ := s.Find("a img").Attr("src")
 		src, _ := s.Find("a").Attr("href")
 		title := s.Find(".item-text .item-title").Text()
-    img := getImageFromUrl(img_src)
-    item := DiscoverItem{Src: src, Img: img, Name: title}
+    item := DiscoverItem{Src: src, Name: title, Fetcher: f}
+    go item.FetchImg(img_src)
+    //img := getImageFromUrl(img_src)
     println(title)
     println(img_src)
     println(src)
