@@ -15,7 +15,6 @@ type BattwoFetcher struct {
 
 
 func (f *BattwoFetcher) FetchDiscoverItems() []DiscoverItem {
-  println("battwo FetchDiscoverItems")
   var items []DiscoverItem
 
   // Send GET request to website
@@ -34,22 +33,15 @@ func (f *BattwoFetcher) FetchDiscoverItems() []DiscoverItem {
   doc, err := goquery.NewDocumentFromReader(resp.Body)
   if err != nil {
 		log.Fatalf("Error: %d", err)
-    return nil
   }
 
-  println("find element by id")
   doc.Find("#series-list .item").Each(func(i int, s *goquery.Selection) {
 		// Get img source
 		img_src, _ := s.Find("a img").Attr("src")
 		src, _ := s.Find("a").Attr("href")
 		title := s.Find(".item-text .item-title").Text()
-    item := DiscoverItem{Src: src, Name: title, Fetcher: f}
-    go item.FetchImg(img_src)
-    //img := getImageFromUrl(img_src)
-    println(title)
-    println(img_src)
-    println(src)
-    println("---")
+    item := DiscoverItem{Src: src, Name: title, ImgSrc: img_src, Fetcher: f}
+    println("Fetching: ", title)
     items = append(items, item)
 	})
 
